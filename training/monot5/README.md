@@ -11,12 +11,12 @@ Here we provide code we have used for training monoT5 models.
 To replicate the performance of MonoT5 base on MSMARCO from the original monoT5 paper [1], you should use t5train.py with the following configuration: 
 
 - train the model for one epoch on the small set of [MSMARCO-passage triples](https://huggingface.co/datasets/irds/msmarco-passage_train_triples-small)
-- Since Nogueira et al. [1] limited the number of triples to 6.4e-5, number_df = 640000
+- Since Nogueira et al. [1] limited the number of triples to 6.4e-5, number_df = 640000, which corresponds to 10k steps
 - Use Adafactor as optimizer, with learning rate equal to 3e-4 and weigth decay equal to 5e-5
 - Use batch size equal to 128 by applying gradient accumulation (mini batch size = 8, number of accumulation = 16)
 - Truncate the input sentence with 'longest_first' option and max_length = 512
 
-In this way, you can reproduce [monoT5-base-10k](https://huggingface.co/castorini/monot5-base-msmarco-10k) with the following results:
+In this way, you can reproduce [MonoT5-base-10k](https://huggingface.co/castorini/monot5-base-msmarco-10k) with the following results:
 
 |  **Model** | **AP** | **RR** | **nDCG@10** |
 |:----------:|:------:|:------:|:-----------:|
@@ -28,29 +28,29 @@ In this way, you can reproduce [monoT5-base-10k](https://huggingface.co/castorin
 
 ## How to reproduce Light-MonoT5 [2]
 
-To replicate the performance of monoT5 base on MSMARCO, you should use t5train.py with the same configuration as MonoT5 but the only parameters updated during the training are the embeddings of the prompt tokens, i.e. Query, Document, Relevant, true, false and EoS. You need to add to your code: 
+To replicate the performance of Light-MonoT5 base on MS MARCO, you should use t5train.py with the same configuration as MonoT5 but with two differences: 
+
+- Put number_df = 6400000, in this way we can compare with [Monot5-base-100k](https://huggingface.co/castorini/monot5-base-msmarco), which has been trained for 100k steps (and not 10k)
+- The only parameters updated during the training are the embeddings of the prompt tokens, i.e. `Query`, `Document`, `Relevant`, `true`, `false`, `EoS` (`End of Sentence` token) and `Colon` (`:`). You need to add the following code to t5train.py:
+
 ````
-# Register hook to zero out gradients for all but new token IDs
+# Register hook to zero out gradients for all tokens not in the prompt
 def mask_gradients(grad):
     mask = torch.zeros_like(grad)
-    if args.train_Query:
-        mask[27569] = 1.0
-        mask[3] = 1.0
-    if args.train_Document:
-        mask[11167] = 1.0
-    if args.train_Relevan:
-        mask[31484] = 1.0
-    if args.train_true_false:
-        mask[1176] = 1.0
-        mask[6136] = 1.0
-    if args.train_eos:
-        mask[1] = 1.0
-    if args.train_colon:
-        mask[10] = 1.0
-    
-    #mask[tokenizer.encode(['[newtok1]'])[0]]=1.0
-    #mask[tokenizer.encode(['[newtok2]'])[0]]=1.0
-    #mask[tokenizer.encode(['[newtok3]'])[0]]=1.0
+    # If you want to train the token Query
+    mask[27569] = 1.0
+    mask[3] = 1.0
+    # If you want to train the token Document
+    mask[11167] = 1.0
+    # If you want to train the token Relevant
+    mask[31484] = 1.0
+    # If you want to train the tokens true and false
+    mask[1176] = 1.0
+    mask[6136] = 1.0
+    # If you want to train the EoS token
+    mask[1] = 1.0
+    # If you want to train the Colon (:)
+    mask[10] = 1.0
     
     return grad * mask
 
@@ -59,11 +59,11 @@ embedding_weight.requires_grad = True
 embedding_weight.register_hook(mask_gradients)
 ````
 
+All the other parameters of the model must have `requires_grad = False`.
 
 [2] Braga et al., 'Revealing MonoT5’s Learning Mechanisms via Prompt-Token Adaptation' in ECIR 2026
-
-[2]
 
 # Credits
 
 Sean MacAvaney, University of Glasgow
+Marco Braga, University of Milano-Bicocca
