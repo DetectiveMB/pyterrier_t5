@@ -6,9 +6,9 @@ Here we provide code we have used for training monoT5 models.
 
  - t5-train-bm25negs.py - this uses the MSMARCO training queries for training monoT5. It adds negative samples obtained using BM25 from a Pisa index.
 
-## Reproducibility of MonoT5
+## Reproducibility of monoT5
 
-To replicate the performance of MonoT5 base on MSMARCO from the original monoT5 paper [1], you should use t5train.py with the following configuration: 
+To replicate the performance of monoT5 base on MSMARCO from the original monoT5 paper [1], you should use t5train.py with the following configuration: 
 
 - train the model for one epoch on the small set of [MSMARCO-passage triples](https://huggingface.co/datasets/irds/msmarco-passage_train_triples-small)
 - Since Nogueira et al. [1] limited the number of triples to 6.4e-5, number_df = 640000, which corresponds to 10k steps
@@ -16,7 +16,7 @@ To replicate the performance of MonoT5 base on MSMARCO from the original monoT5 
 - Use batch size equal to 128 by applying gradient accumulation (mini batch size = 8, number of accumulation = 16)
 - Truncate the input sentence with 'longest_first' option and max_length = 512
 
-In this way, you can reproduce [MonoT5-base-10k](https://huggingface.co/castorini/monot5-base-msmarco-10k) with the following results:
+In this way, you can reproduce [monoT5-base-10k](https://huggingface.co/castorini/monot5-base-msmarco-10k) with the following results:
 
 |  **Model** | **AP** | **RR** | **nDCG@10** |
 |:----------:|:------:|:------:|:-----------:|
@@ -26,11 +26,11 @@ In this way, you can reproduce [MonoT5-base-10k](https://huggingface.co/castorin
 
 [1] [NOGUEIRA, Rodrigo, et al. Document Ranking with a Pretrained Sequence-to-Sequence Model. In: EMNLP 2020](https://aclanthology.org/2020.findings-emnlp.63/)
 
-## How to reproduce Light-MonoT5 [2]
+## How to reproduce Light-MonoT5
 
-To replicate the performance of Light-MonoT5 base on MS MARCO, you should use t5train.py with the same configuration as MonoT5 but with two differences: 
+To replicate the performance of Light-MonoT5 base [2] on MSMARCO, you should use t5train.py with the same configuration as MonoT5 but with two differences: 
 
-- Put number_df = 6400000, in this way we can compare with [Monot5-base-100k](https://huggingface.co/castorini/monot5-base-msmarco), which has been trained for 100k steps (and not 10k)
+- Put number_df = 6400000, in this way we can compare with [monot5-base-100k](https://huggingface.co/castorini/monot5-base-msmarco), which has been trained for 100k steps (and not 10k)
 - The only parameters updated during the training are the embeddings of the prompt tokens, i.e. `Query`, `Document`, `Relevant`, `true`, `false`, `EoS` (`End of Sentence` token) and `Colon` (`:`). You need to add the following code to t5train.py:
 
 ````
