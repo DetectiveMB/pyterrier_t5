@@ -24,8 +24,6 @@ In this way, you can reproduce [monoT5-base-10k](https://huggingface.co/castorin
 | Replicated | 0.367  |  0.944 |    0.700    |
 
 
-[1] [NOGUEIRA, Rodrigo, et al. Document Ranking with a Pretrained Sequence-to-Sequence Model. In: EMNLP 2020](https://aclanthology.org/2020.findings-emnlp.63/)
-
 ## How to reproduce Light-MonoT5
 
 To replicate the performance of Light-MonoT5 base [2] on MSMARCO, you should use t5train.py with the same configuration as MonoT5 but with two differences: 
@@ -60,6 +58,10 @@ embedding_weight.register_hook(mask_gradients)
 ````
 
 All the other parameters of the model must have `requires_grad = False`.
+
+# References
+
+[1] [NOGUEIRA, Rodrigo, et al. Document Ranking with a Pretrained Sequence-to-Sequence Model. In: EMNLP 2020](https://aclanthology.org/2020.findings-emnlp.63/)
 
 [2] Braga et al., 'Revealing MonoT5’s Learning Mechanisms via Prompt-Token Adaptation' in ECIR 2026
 
