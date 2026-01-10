@@ -66,4 +66,5 @@ All the other parameters of the model must have `requires_grad = False`.
 # Credits
 
 Sean MacAvaney, University of Glasgow
+
 Marco Braga, University of Milano-Bicocca
