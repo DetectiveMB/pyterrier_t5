@@ -15,7 +15,7 @@ BATCH_SIZE = 8
 import argparse
 parser = argparse.ArgumentParser()
 parser.add_argument('--train_type', type=str, choices=['full', 'light'], default='full', help='Training strategy to use: Full-tuning or Light-MonoT5')
-parser.add_argument('--steps', type=str, choices=['1', '10'], default='10', help='Number of training steps')
+parser.add_argument('--steps', type=int, choices=[1, 10], default=10, help='Number of training steps')
 parser.add_argument('--epochs', type=str, default='1', help='Number of epochs')
 
 import torch
